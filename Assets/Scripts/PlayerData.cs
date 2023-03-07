@@ -5,18 +5,16 @@ using UnityEngine;
 //Class to store Player Data
 public class PlayerData : MonoBehaviour
 {
+    //Player data instance
     public static PlayerData instance;
 
+    //Player data properties
     public int maxHealth = 100;
-    public int xp = 0;
-    public int coins = 0;
     public int points = 0;
-    public bool regen = false;
-    public bool poison = false;
-    public bool freezing = false;
 
     void Awake()
     {
+        //Singleton
         if (instance == null)
         {
             DontDestroyOnLoad(gameObject);
@@ -28,17 +26,10 @@ public class PlayerData : MonoBehaviour
         }
     }
 
+    //Method to reset player's data
     public void ResetData()
     {
         maxHealth = 100;
-        xp = 0;
-        coins = 0;
         points = 0;
-        regen = false;
-        poison = false;
-        freezing = false;
-        //PlayerController.smallAmmo = 32;
-        //PlayerController.medAmmo = 60;
-        //PlayerController.largeAmmo = 100;
     }
 }

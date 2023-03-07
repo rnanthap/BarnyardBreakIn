@@ -6,22 +6,25 @@ using UnityEngine.AI;
 
 public class Enemy : MonoBehaviour
 {
+    //Stores the enemy's last position
+    private Vector3 lastPosition;
+
+    //Variable assignment for inspector
     public NavMeshAgent agent;
     public GameObject playerObj;
     public LayerMask playerMask;
-    //public Animator animator;
-    public AudioController audioController;
+    public AudioSource animalAudio; //The corresponding animals have audio souce component attached to them
 
-    private Vector3 lastPosition;
-    //private GameObject ice;
-
+    //Base stats, corresponding animals have range, speed and strength assigned in inspector
     public float detectRange = 10f;
     public float attackRange = 1f;
     public float attackSpeed = 2f;
-    public int health = 50;
     public int strength = 5;
 
+    //Timer before enemy can attack again
     float attackTimer = 0;
+
+    //Checks is player is in detect or attack range
     bool inDetectRange, inAttackRange;
 
 
@@ -33,115 +36,53 @@ public class Enemy : MonoBehaviour
         lastPosition = gameObject.transform.position;
 
         //Assign audio controller
-        audioController = GameObject.Find("AudioController").GetComponent<AudioController>();
-
-        //ice = gameObject.transform.Find("Ice").gameObject;
-        //ice.SetActive(false);
+        animalAudio = gameObject.GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
     public virtual void Update()
     {
+        //Check if play is in detect or attack range
         inDetectRange = Physics.CheckSphere(transform.position, detectRange, playerMask);
         inAttackRange = Physics.CheckSphere(transform.position, attackRange, playerMask);
 
         attackTimer += Time.deltaTime;
 
-        //Chase player if is in range and not frozen
+        //Chase player if is in range
         if (inDetectRange) Chase();
-
-        ////Set walking animation
-        //if (gameObject.transform.position != lastPosition)
-        //    animator.SetBool("isMoving", true);
-        //else
-        //    animator.SetBool("isMoving", false);
 
         //Assign last position
         lastPosition = gameObject.transform.position;
 
         //If player is in attack range and enemy can attack again
         if (inAttackRange && attackTimer >= attackSpeed) Attack();
-
     }
 
-    //Method to take damage from Player
-    //public void takeDamage(int damage)
-    //{
-    //    health -= damage;
-
-    //    //If Enemy has no health
-    //    if (health <= 0)
-    //    {
-    //        //If Boss Enemy is defeated, instantiate the potion
-    //        if (transform.CompareTag("BossEnemy"))
-    //        {
-    //            Instantiate(potion, transform.position, Quaternion.identity);
-    //        }
-
-    //        //If not Boss Enemy
-    //        else
-    //        {
-    //            //Add XP to player
-    //            PlayerController.instance.addXP(xpValue);
-
-    //            //0 = coin, 1 = ammo
-    //            float randomNum = Random.Range(0, 2);
-
-    //            //If level 1 is done, instantiate medium size ammo
-    //            if (PlayerController.level0Complete)
-    //            {
-    //                if (randomNum == 0)
-    //                {
-    //                    Instantiate(coinPrefab, transform.position, Quaternion.identity);
-    //                }
-    //                else
-    //                {
-    //                    Instantiate(medAmmoPrefab, transform.position, Quaternion.identity);
-    //                }
-    //            }
-
-    //            //If level 0, instantiate small size ammo
-    //            else
-    //            {
-    //                if (randomNum == 0)
-    //                {
-    //                    Instantiate(coinPrefab, transform.position, Quaternion.identity);
-    //                }
-    //                else
-    //                {
-    //                    Instantiate(smallAmmoPrefab, transform.position, Quaternion.identity);
-    //                }
-    //            }
-    //        }
-
-    //        //Destory the enemy GO
-    //        Destroy(gameObject);
-    //    }
-    //}
-
-    //public void Poison()
-    //{
-    //    poisoned = true;
-    //}
-
-    //public virtual void Freeze()
-    //{
-    //    frozen = true;
-    //}
-
+    //Method for animal to attack player
     public virtual void Attack()
     {
+        //Reset attack timer
         attackTimer = 0;
-        //animator.SetTrigger("attack");
-        audioController.ZombieAttackAudio();
+
+        //Play animal audio
+        if (animalAudio.isPlaying)
+        {
+            animalAudio.Stop();
+        }
+
+        animalAudio.Play();
+
+        //Have player take damage
         PlayerController.instance.TakeDamage(strength);
     }
 
+    //Method to chase player
     public virtual void Chase()
     {
         agent.SetDestination(playerObj.transform.position);
     }
 
+    //Draws both attack and detect range on editor
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

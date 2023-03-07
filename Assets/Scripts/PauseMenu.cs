@@ -6,31 +6,20 @@ using UnityEngine.SceneManagement;
 //Class to handle Pause Menu behavior
 public class PauseMenu : MonoBehaviour
 {
-    //public GameObject skillTreeObj;
-    //public SkillTree skillTree;
-
     //Method to restart the game
     public void RestartGame()
     {
+        //Unfreeze time
         Time.timeScale = 1;
-        //PlayerController.hasCarKey = false;
-        //PlayerController.hasCityKey1 = false;
-        //PlayerController.hasCityKey2 = false;
-        //PlayerController.hasCityKey3 = false;
-        //PlayerController.instance.hasPotion = false;
-        //PlayerController.level0Complete = false;
+
+        //Reset player data
         PlayerData.instance.ResetData();
+
+        //Load Main Menu
         SceneManager.LoadScene(0);
     }
 
-    //Method to open the skill tree
-    //public void OpenSkillTree()
-    //{
-    //    skillTreeObj.SetActive(true);
-    //    skillTree.UpdateButtons();
-    //}
-
-    //Method to quiet the game
+    //Method to quit the game
     public void QuitGame()
     {
         //Close the application
